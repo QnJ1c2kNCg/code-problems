@@ -6,5 +6,9 @@ authors = ["Bruno Roy <brusi_roy@hotmail.com>"]
 name = "puzzle_1"
 path = "src/puzzle_1.rs"
 
+[[bin]]
+name = "puzzle_2"
+path = "src/puzzle_2.rs"
+
 [dependencies]
 regex = "0.1"
