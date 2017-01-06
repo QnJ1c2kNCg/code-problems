@@ -49,6 +49,7 @@ public:
     std::shared_ptr<Node> getHead() const { return head_; };
     std::shared_ptr<Node> getTail() const { return tail_; };
 
+    void setHead(std::shared_ptr<Node> head) { head_ = head; };
 
 private:
     size_t size_;
