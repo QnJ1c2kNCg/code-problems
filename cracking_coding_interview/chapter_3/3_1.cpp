@@ -36,8 +36,12 @@ public:
 private:
     void resize() {
         capacity_ *= 2;
+        auto newStack = new T[capacity_];
+        for (auto i = 0; i < size_; ++i) {
+            newStack[i] = stack_[i];
+        }
         delete[] stack_;
-        stack_ = new T[capacity_];
+        stack_ = newStack;
     }
 
     std::size_t size_;
@@ -45,7 +49,7 @@ private:
     const std::size_t DEFAULT_CAPACITY_ = 8;
     T* stack_;
 };
-
+/*
 int main() {
     auto stack = Stack<int>();
 
@@ -65,3 +69,4 @@ int main() {
 
     return 0;
 }
+*/
