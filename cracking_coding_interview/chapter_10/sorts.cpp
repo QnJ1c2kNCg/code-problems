@@ -36,6 +36,36 @@ void selectionSort(std::vector<int>& v) {
   }
 }
 
+void quickSort(std::vector<int>& v, int left, int right) {
+  // In this implementation the pivot is the middle element
+  int pivot = v[(left + right) / 2];
+  int i = left, j = right;
+
+  while (i <= j) {
+    while (v[i] < pivot) { // This while stops when we find a "big" element
+      ++i;
+    }
+    while (v[j] > pivot) { // This while stops when we find a "small" element
+      --j;
+    }
+    // If the if wasn't there we would swap "big" elements from the right for a "small" element from the left
+    if (i <= j) {
+      swap(v, i, j);
+      ++i;
+      --j;
+    }
+  }
+
+  // Those 2 portions didn't get sorted so we use recursion
+  if (left < j) {
+    quickSort(v, left, j);
+  }
+
+  if (i < right) {
+    quickSort(v, i, right);
+  }
+}
+
 int main() {
 
   auto v = std::vector<int>();
@@ -50,7 +80,8 @@ int main() {
 
   std::cout << "Sorting" << std::endl;
   // bubbleSort(v);
-  selectionSort(v);
+  // selectionSort(v);
+  quickSort(v, 0, 99);
 
   for(auto x : v) {
     std::cout << x << std::endl;
