@@ -66,6 +66,45 @@ void quickSort(std::vector<int>& v, int left, int right) {
   }
 }
 
+// This is O(kn) where k is the number of digits in the largest number (of the array)
+void radixSort(std::vector<int>& v) {
+
+  // find the largest number
+  int maxNumber = v.front();
+  for (auto x : v) {
+    if (x > maxNumber) {
+      maxNumber = x;
+    }
+  }
+
+  // for each digit do
+  int exp = 1;
+  while (maxNumber / exp > 0) {
+
+    int decimalBucket[10] = { 0 };
+
+    for (auto x : v) {
+      ++decimalBucket[(x / exp) % 10];
+    }
+
+    for (auto i = 1; i < 10; ++i) {
+      decimalBucket[i] += decimalBucket[i - 1];
+    }
+
+    auto tempBuffer = std::vector<int>(v.size(), 0);
+
+    for (int i = v.size() - 1; i >= 0; --i) {
+      // we need the -- because there is n values in the decimalBucket
+      tempBuffer[--decimalBucket[(v[i] / exp) % 10]] = v[i];
+    }
+
+    for (auto i = 0; i < v.size(); ++i) {
+      v[i] = tempBuffer[i];
+    }
+    exp *= 10;
+  }
+}
+
 int main() {
 
   auto v = std::vector<int>();
@@ -81,7 +120,8 @@ int main() {
   std::cout << "Sorting" << std::endl;
   // bubbleSort(v);
   // selectionSort(v);
-  quickSort(v, 0, 99);
+  // quickSort(v, 0, 99);
+  radixSort(v);
 
   for(auto x : v) {
     std::cout << x << std::endl;
