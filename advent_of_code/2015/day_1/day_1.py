@@ -12,4 +12,17 @@ def part_1(input_str):
             floor -= 1
     return floor
 
+def part_2(input_str):
+    """ Part 2 """
+    floor = 0
+    for i, char in enumerate(input_str, 1):
+        if char == '(':
+            floor += 1
+        elif char == ')':
+            floor -= 1
+        if floor == -1:
+            return i
+    return None
+
 print('Part one: {}', part_1(INPUT_STR))
+print('Part two: {}', part_2(INPUT_STR))
