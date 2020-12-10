@@ -1,4 +1,5 @@
 use std::fs;
+use std::collections::HashMap;
 
 fn part_1(contents: &str) -> u64 {
     let mut input: Vec<u32> = Vec::new();
@@ -10,7 +11,6 @@ fn part_1(contents: &str) -> u64 {
     let mut current_adapter = 0;
     let mut n_1_jump = 0;
     let mut n_3_jump = 1;
-    println!("{:?}", input);
     for a in input {
         let diff = a - current_adapter;
         current_adapter = a;
@@ -21,13 +21,40 @@ fn part_1(contents: &str) -> u64 {
         }
     }
 
-    println!("Jump of size 1: {}", n_1_jump);
-    println!("Jump of size 3: {}", n_3_jump);
     n_1_jump * n_3_jump
 }
 
+fn count_permutation(input: &Vec<u64>, current_idx: usize, memoization: &mut HashMap<usize, u64>) -> u64 {
+    if memoization.contains_key(&current_idx) {
+        return *memoization.get(&current_idx).unwrap();
+    }
+    if current_idx == input.len() - 1 {
+        return 1;
+    }
+
+    let mut permutation_count = 0;
+    for i in current_idx + 1..current_idx + 4 {
+        if i < input.len() && input[i] - input[current_idx] <= 3 {
+            permutation_count += count_permutation(&input, i, memoization);
+        }
+    }
+
+    memoization.insert(current_idx, permutation_count);
+    *memoization.get(&current_idx).unwrap()
+}
+
 fn part_2(contents: &str) -> u64 {
-    0
+    let mut input: Vec<u64> = Vec::new();
+    for line in contents.lines() {
+        input.push(line.parse::<u64>().unwrap());
+    }
+    input.sort();
+    input.insert(0, 0);
+
+    let mut memoization = HashMap::new();
+    memoization.insert(input.len() - 1, 1);
+
+    count_permutation(&input, 0, &mut memoization)
 }
 
 fn main() {
