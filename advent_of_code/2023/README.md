@@ -1,0 +1,1 @@
+ths year, the goal is to use Haskell. i've never used Haskell, so this is a learning experience ;)
