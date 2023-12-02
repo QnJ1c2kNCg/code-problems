@@ -5,8 +5,8 @@ import Data.Maybe (fromJust)
 
 main :: IO ()
 main = do
-  input <- readFile "day_1.input"
-  let input' = splitOn "\n" input
+  input <- readFile "./inputs/day1.input"
+  let input' = lines input
 
   let firstDigit' = fromJust . find isDigit
   let mapFn xs = read (firstDigit' xs : [(firstDigit' . reverse) xs]) :: Integer
