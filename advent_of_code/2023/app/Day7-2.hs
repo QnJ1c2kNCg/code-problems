@@ -3,6 +3,7 @@ import Data.Function (on)
 import Data.Char (isDigit, digitToInt)
 import Data.List
 import Data.Bifunctor
+import Data.Ord
 
 data HandType = HighCard | OnePair | TwoPair | ThreeOfAKind | FullHouse | FourOfAKind | FiveOfAKind deriving (Enum, Show, Eq, Ord)
 
@@ -14,7 +15,7 @@ cardToNumber c
   | c == 'A' = 14
   | c == 'K' = 13
   | c == 'Q' = 12
-  | c == 'J' = 11
+  | c == 'J' = 1
   | c == 'T' = 10
   | otherwise = digitToInt c
 
@@ -22,18 +23,22 @@ convertHandToNumber :: [Char] -> [Int]
 convertHandToNumber = map cardToNumber
 
 convertHandToOccurenceCounts :: [Int] -> [Int]
-convertHandToOccurenceCounts = sort . map length . group . sort 
+convertHandToOccurenceCounts = sortBy (comparing Down) . map length . group . sort . filter (/= 1)
 
 identifyHandType :: [Int] -> HandType
 identifyHandType hand 
+  | null occurencesWithoutJokers = FiveOfAKind
   | occurences == [5] = FiveOfAKind
-  | occurences == [1,4] = FourOfAKind
-  | occurences == [2, 3] = FullHouse
-  | occurences == [1, 1, 3] = ThreeOfAKind
-  | occurences == [1, 2, 2] = TwoPair
-  | occurences == [1, 1, 1, 2] = OnePair
+  | occurences == [4,1] = FourOfAKind
+  | occurences == [3, 2] = FullHouse
+  | occurences == [3, 1, 1] = ThreeOfAKind
+  | occurences == [2, 2, 1] = TwoPair
+  | occurences == [2, 1, 1, 1] = OnePair
   | occurences == [1, 1, 1, 1, 1] = HighCard
-  where occurences = convertHandToOccurenceCounts hand
+  where
+    occurencesWithoutJokers = convertHandToOccurenceCounts hand
+    occurences = (head occurencesWithoutJokers + 5 - sum occurencesWithoutJokers): tail occurencesWithoutJokers
+
 
 partOneSortingFunction :: [Int] -> [Int] -> Ordering
 partOneSortingFunction lhs rhs 
@@ -59,4 +64,4 @@ main = do
     handConvertedToNumber = fmap (first convertHandToNumber) tupledInput
     bidsOrdered = map (\(_, bid) -> read bid) (sortBy (partOneSortingFunction `on` fst) handConvertedToNumber) :: [Int]
 
-  putStrLn $ "Part 1: " ++ show (accumulate bidsOrdered 1)
+  putStrLn $ "Part 2: " ++ show (accumulate bidsOrdered 1)
