@@ -8,22 +8,13 @@ $ 9 7 6 2 1
 $ 1 3 2 4 5
 $ 8 6 4 4 1
 $ 1 3 6 7 9
-# $ 1 3 6 7 
+$ 1 3 6 7 
 Sample ←
 
-Parse ← ⊜(⊜⋕≠@ .)≠@\n.
-# ⊜(□⊜⋕⊸≠@ )⊸≠@\n
+Parse ← ⊜(□⊜⋕⊸≠@ )⊸≠@\n
 
-IsAllowedGaps ← ≡/↧(↧⊃(>0)(<4)⌵≡⧈-)
-IsSorted      ← ↥⊃(≡/↧=≡(⊏⊸⍏))(≡/↧=≡(⊏⊸⍖)).
+IsAllowedGaps ← ∵°□⍚/↧(↧⊃(>0)(<4)⌵⍚⧈-)
+IsSorted      ← ∵°□↥⊃(⍚/↧=⍚(⍆))(⍚/↧=⍚(⊏⊸⍖)).
 
-# IsSorted Parse Sample
-# # Parse Sample
-# # ≡⧈-.
-# # ↧⊃(>0)(<4)⌵.
-# # ≡/↧
-# IsAllowedGaps Parse Sample
-# /+↧
-
-Part₁ ← /+↧⊃IsSorted IsAllowedGaps
-Part₁ Parse Sample
+Part₁ ← /+×⊃IsAllowedGaps IsSorted Parse
+Part₁ Input
