@@ -3,8 +3,7 @@ local function part_1(content)
 	local number_of_zeros = 0
 
 	for line in content:gmatch("[^\n]+") do
-		local direction = string.sub(line, 1, 1)
-		local amount = tonumber(string.sub(line, 2))
+		local direction, amount = line:match("(%a)(%d+)")
 		if direction == "R" then
 			current_dial = current_dial + amount
 		else
@@ -23,14 +22,12 @@ local function part_2(content)
 	local passing_zero = 0
 
 	for line in content:gmatch("[^\n]+") do
-		local direction = string.sub(line, 1, 1)
-		local amount = tonumber(string.sub(line, 2))
+		local direction, amount = line:match("(%a)(%d+)")
 
 		if direction == "R" then
 			current_dial = current_dial + amount
 			if current_dial > 99 then
 				passing_zero = passing_zero + (current_dial // 100)
-				current_dial = current_dial % 100
 			end
 		else
 			current_dial = current_dial - amount
@@ -43,8 +40,8 @@ local function part_2(content)
 			if current_dial < 0 and current_dial + amount == 0 then
 				passing_zero = passing_zero + (math.abs(current_dial) // 100)
 			end
-			current_dial = current_dial % 100
 		end
+		current_dial = current_dial % 100
 	end
 	return passing_zero
 end
