@@ -1,3 +1,5 @@
+local utils = require("utils")
+
 local function neighboring_rolls(grid, row, col)
 	local rolls_of_paper = 0
 	for row_offset = -1, 1 do
@@ -47,11 +49,12 @@ local function part_1_2(grid, remove_accessible)
 	return accessible_rolls
 end
 
-local input_file = io.open("day_4.input", "r")
-local content = input_file:read("*all")
-input_file:close()
-
+local content = utils.read_file("day_4.input")
 local grid = parse_grid(content)
 
-print("Part 1: ", part_1_2(grid, false))
-print("Part 2: ", part_1_2(grid, true))
+utils.time(function()
+	print("Part 1: ", part_1_2(grid, false))
+end)
+utils.time(function()
+	print("Part 2: ", part_1_2(grid, true))
+end)
