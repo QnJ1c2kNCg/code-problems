@@ -15,7 +15,7 @@ local function neighoring_rolls(table, row, col)
 	return rolls_of_paper
 end
 
-local function part_1(content, length)
+local function part_1(content)
 	local accessible_rolls = 0
 	local map = {}
 	-- TODO: Two passes is not ideal :)
@@ -36,8 +36,36 @@ local function part_1(content, length)
 	return accessible_rolls
 end
 
+local function part_2(content)
+	local accessible_rolls = 0
+	local map = {}
+	-- TODO: Two passes is not ideal :)
+	for line in content:gmatch("[^%s]+") do
+		local row = {}
+		for c in line:gmatch(".") do
+			table.insert(row, c)
+		end
+		table.insert(map, row)
+	end
+	local rolls_have_been_removed = true
+	while rolls_have_been_removed do
+		rolls_have_been_removed = false
+		for row = 1, #map do
+			for col = 1, #map[row] do
+				if neighoring_rolls(map, row, col) < 4 and map[row][col] == "@" then
+					accessible_rolls = accessible_rolls + 1
+					map[row][col] = "."
+					rolls_have_been_removed = true
+				end
+			end
+		end
+	end
+	return accessible_rolls
+end
+
 local input_file = io.open("day_4.input", "r")
 local content = input_file:read("*all")
 input_file:close()
 
 print("Part 1: ", part_1(content))
+print("Part 2: ", part_2(content))
