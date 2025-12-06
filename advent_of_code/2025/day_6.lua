@@ -21,13 +21,10 @@ local function part_1(content)
 	for line in content:gmatch("[^\n]+") do
 		local index = 1
 		for number in line:gmatch("(%d+)") do
-			local numbers = {}
-			if numbers_table[index] then
-				numbers = numbers_table[index]
-			else
-				numbers_table[index] = numbers
+			if not numbers_table[index] then
+				numbers_table[index] = {}
 			end
-			table.insert(numbers, tonumber(number))
+			table.insert(numbers_table[index], tonumber(number))
 			index = index + 1
 		end
 
