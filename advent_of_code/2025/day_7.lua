@@ -3,35 +3,35 @@ local utils = require("utils")
 local function part_1(content)
 	local n_splits = 0
 	local beam_locations = {}
-	beam_locations[content:find("S")] = content:find("S")
+	beam_locations[content:find("S")] = true
 
 	for line in content:gmatch("[^%s]+") do
 		local new_beam_locations = {}
-		for _, beam_location in pairs(beam_locations) do
+		for beam_location in pairs(beam_locations) do
 			if line:sub(beam_location, beam_location) == "^" then
 				-- It's impossible to out of bound with the input
-				new_beam_locations[beam_location - 1] = beam_location - 1
-				new_beam_locations[beam_location + 1] = beam_location + 1
-				beam_locations[beam_location] = nil
+				new_beam_locations[beam_location - 1] = true
+				new_beam_locations[beam_location + 1] = true
 				n_splits = n_splits + 1
+			else
+				new_beam_locations[beam_location] = true
 			end
 		end
-		for k, v in pairs(new_beam_locations) do
-			beam_locations[k] = v
-		end
+		beam_locations = new_beam_locations
 	end
 	return n_splits
 end
 
 local function part_2(content)
 	local function recurse_inner(beam, lines, line_index, dp)
-		local key = tostring(beam) .. "|" .. tostring(line_index)
-		if dp[key] then
-			return dp[key]
-		end
 		-- Reached the end
 		if not lines[line_index] then
 			return 1
+		end
+
+		local key = tostring(beam) .. "|" .. tostring(line_index)
+		if dp[key] then
+			return dp[key]
 		end
 
 		local out = nil
