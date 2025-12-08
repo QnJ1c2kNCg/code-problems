@@ -20,7 +20,7 @@ local function distance(p1, p2)
 end
 
 local function closest_pair(points, greater_than)
-	local min_distance = math.maxinteger
+	local min_distance = 10000000000000
 	local out = {}
 	for i = 1, #points - 1 do
 		for j = i + 1, #points do
@@ -81,8 +81,6 @@ local function part_1(content)
 	for _ = 1, 1000 do
 		pair, last_min_distance = closest_pair(all_points, last_min_distance)
 		connect_circuits(circuits, pair[1], pair[2])
-		print(pair[1], pair[2], last_min_distance)
-		print("Length of circuits: ", #circuits)
 	end
 
 	table.sort(circuits, function(a, b)
@@ -91,8 +89,33 @@ local function part_1(content)
 	return #circuits[1] * #circuits[2] * #circuits[3]
 end
 
+local function part_2(content)
+	local all_points = {}
+	local circuits = {}
+
+	for line in content:gmatch("[^%s]+") do
+		local x, y, z = line:match("(%d+)%,(%d+)%,(%d+)")
+		local point = Point:new(x, y, z)
+		table.insert(all_points, point)
+		table.insert(circuits, { point })
+	end
+
+	local pair
+	local last_min_distance = 0
+	while #circuits > 1 do
+		pair, last_min_distance = closest_pair(all_points, last_min_distance)
+		connect_circuits(circuits, pair[1], pair[2])
+	end
+	print("last pair: ", pair[1], pair[2])
+
+	return pair[1].x * pair[2].x
+end
+
 local content = utils.read_file("day_8.input")
 
+--utils.time(function()
+--print("Part 1: ", part_1(content))
+--end)
 utils.time(function()
-	print("Part 1: ", part_1(content))
+	print("Part 2: ", part_2(content))
 end)
