@@ -11,7 +11,7 @@ function Point:__eq(other)
 	return self.x == other.x and self.y == other.y and self.z == other.z
 end
 
-function Point:new(x, y, z)
+function Point.new(x, y, z)
 	return setmetatable({ x = x, y = y, z = z }, Point)
 end
 
@@ -20,7 +20,7 @@ local function distance(p1, p2)
 end
 
 local function closest_pair(points, greater_than)
-	local min_distance = 10000000000000
+	local min_distance = math.huge
 	local out = {}
 	for i = 1, #points - 1 do
 		for j = i + 1, #points do
@@ -55,10 +55,8 @@ local function connect_circuits(circuits, p1, p2)
 		end
 	end
 
-	if p1_circuit == p2_circuit then
-		-- nothing to do
-	else
-		-- we need to connect the circuit
+	if p1_circuit ~= p2_circuit then
+		-- Connect the circuits
 		for _, v in ipairs(p2_circuit) do
 			table.insert(p1_circuit, v)
 		end
@@ -72,7 +70,7 @@ local function part_1(content)
 
 	for line in content:gmatch("[^%s]+") do
 		local x, y, z = line:match("(%d+)%,(%d+)%,(%d+)")
-		local point = Point:new(x, y, z)
+		local point = Point.new(tonumber(x), tonumber(y), tonumber(z))
 		table.insert(all_points, point)
 		table.insert(circuits, { point })
 	end
@@ -95,7 +93,7 @@ local function part_2(content)
 
 	for line in content:gmatch("[^%s]+") do
 		local x, y, z = line:match("(%d+)%,(%d+)%,(%d+)")
-		local point = Point:new(x, y, z)
+		local point = Point.new(tonumber(x), tonumber(y), tonumber(z))
 		table.insert(all_points, point)
 		table.insert(circuits, { point })
 	end
@@ -106,16 +104,17 @@ local function part_2(content)
 		pair, last_min_distance = closest_pair(all_points, last_min_distance)
 		connect_circuits(circuits, pair[1], pair[2])
 	end
-	print("last pair: ", pair[1], pair[2])
+
+	print("Last pair: ", pair[1], pair[2])
 
 	return pair[1].x * pair[2].x
 end
 
 local content = utils.read_file("day_8.input")
 
---utils.time(function()
---print("Part 1: ", part_1(content))
---end)
+utils.time(function()
+	print("Part 1: ", part_1(content))
+end)
 utils.time(function()
 	print("Part 2: ", part_2(content))
 end)
