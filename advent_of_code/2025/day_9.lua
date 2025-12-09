@@ -19,57 +19,37 @@ local function part_1(content)
 	return max_area
 end
 
-local function check_in_ranges(ranges, y)
+local function check_in_ranges(ranges, y1, y2)
 	local min = math.huge
-	local max = 0
+	local max = -math.huge
 	for _, range in ipairs(ranges) do
 		min = math.min(min, range[1], range[2])
 		max = math.max(max, range[1], range[2])
 	end
-	return min <= y and y <= max
+	return min <= y1 and y1 <= max and min <= y2 and y2 <= max
 end
 
 local function part_2(content)
 	local all_points = {}
 	local map = {}
 
-	-- local previous_point = { x = 7, y = 3 }
-	local previous_point = { x =97914, y= 50388}
-	--local previous_point = {}
+	local last_x, last_y = content:match("(%d+)%,(%d+)\n$")
+	local previous_point = { x = tonumber(last_x), y = tonumber(last_y) }
 	for line in content:gmatch("[^%s]+") do
 		local x, y = line:match("(%d+)%,(%d+)")
-		x = tonumber(x)
-		y = tonumber(y)
+		x, y = tonumber(x), tonumber(y)
 		table.insert(all_points, { x = x, y = y })
 
-		if previous_point.x then
-			if previous_point.x > x then
-				for i = x, previous_point.x do
-					map[i] = map[i] or {}
-					table.insert(map[i], {
-						math.min(previous_point.y, y),
-						math.max(previous_point.y, y),
-					})
-				end
-			else
-				for i = previous_point.x, x do
-					map[i] = map[i] or {}
-					table.insert(map[i], {
-						math.min(previous_point.y, y),
-						math.max(previous_point.y, y),
-					})
-				end
-			end
+		local min_x = math.min(previous_point.x, x)
+		local max_x = math.max(previous_point.x, x)
+		for i = min_x, max_x do
+			map[i] = map[i] or {}
+			table.insert(map[i], {
+				math.min(previous_point.y, y),
+				math.max(previous_point.y, y),
+			})
 		end
 		previous_point = { x = x, y = y }
-	end
-	-- TODO: the wrap around
-	--
-	for k, v in pairs(map) do
-		print(k)
-		for _, range in ipairs(v) do
-			print("\t[" .. range[1] .. ", " .. range[2] .. "]")
-		end
 	end
 
 	local max_area = 0
@@ -80,7 +60,7 @@ local function part_2(content)
 			local rect_starting_y = math.min(all_points[i].y, all_points[j].y)
 			local rect_ending_y = math.max(all_points[i].y, all_points[j].y)
 
-			-- TODO: Verify that there no points within the rectangle
+			-- Verify that there are no points within the rectangle
 			for x = rect_starting_x + 1, rect_ending_x - 1 do
 				for _, range in ipairs(map[x]) do
 					if rect_starting_y < range[1] and range[1] < rect_ending_y then
@@ -91,15 +71,11 @@ local function part_2(content)
 					end
 				end
 			end
-			-- TODO: Verify that all four corners are in
-			for _, range in ipairs(map[rect_starting_x]) do
-			end
+			-- Verify that all four corners are in
 			if
 				not (
-					check_in_ranges(map[rect_starting_x], rect_starting_y)
-					and check_in_ranges(map[rect_starting_x], rect_ending_y)
-					and check_in_ranges(map[rect_ending_x], rect_starting_y)
-					and check_in_ranges(map[rect_ending_x], rect_ending_y)
+					check_in_ranges(map[rect_starting_x], rect_starting_y, rect_ending_y)
+					and check_in_ranges(map[rect_ending_x], rect_starting_y, rect_ending_y)
 				)
 			then
 				goto continue
@@ -114,10 +90,6 @@ local function part_2(content)
 		end
 	end
 	return max_area
-
-	-- Thinking
-	-- we could hashmap, key by x, and then value is a range of y?
-	-- Then we just loop over all the rectange, pick the reverse corners anc heck if they belong?
 end
 
 local content = utils.read_file("day_9.input")
