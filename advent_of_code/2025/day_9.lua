@@ -19,12 +19,23 @@ local function part_1(content)
 	return max_area
 end
 
+local function check_in_ranges(ranges, y)
+	local min = math.huge
+	local max = 0
+	for _, range in ipairs(ranges) do
+		min = math.min(min, range[1], range[2])
+		max = math.max(max, range[1], range[2])
+	end
+	return min <= y and y <= max
+end
+
 local function part_2(content)
 	local all_points = {}
 	local map = {}
 
-	-- local previous_point = { x =97914, y= 50388}
-	local previous_point = {}
+	-- local previous_point = { x = 7, y = 3 }
+	local previous_point = { x =97914, y= 50388}
+	--local previous_point = {}
 	for line in content:gmatch("[^%s]+") do
 		local x, y = line:match("(%d+)%,(%d+)")
 		x = tonumber(x)
@@ -34,21 +45,19 @@ local function part_2(content)
 		if previous_point.x then
 			if previous_point.x > x then
 				for i = x, previous_point.x do
-					local min_val = map[i] and map[i][1] or previous_point.y
-					local max_val = map[i] and map[i][2] or previous_point.y
-					map[i] = {
-						math.min(min_val, previous_point.y, y),
-						math.max(max_val, previous_point.y, y),
-					}
+					map[i] = map[i] or {}
+					table.insert(map[i], {
+						math.min(previous_point.y, y),
+						math.max(previous_point.y, y),
+					})
 				end
 			else
 				for i = previous_point.x, x do
-					local min_val = map[i] and map[i][1] or previous_point.y
-					local max_val = map[i] and map[i][2] or previous_point.y
-					map[i] = {
-						math.min(min_val, previous_point.y, y),
-						math.max(max_val, previous_point.y, y),
-					}
+					map[i] = map[i] or {}
+					table.insert(map[i], {
+						math.min(previous_point.y, y),
+						math.max(previous_point.y, y),
+					})
 				end
 			end
 		end
@@ -57,17 +66,42 @@ local function part_2(content)
 	-- TODO: the wrap around
 	--
 	for k, v in pairs(map) do
-		print(k, "[" .. v[1] .. ", " .. v[2] .. "]")
+		print(k)
+		for _, range in ipairs(v) do
+			print("\t[" .. range[1] .. ", " .. range[2] .. "]")
+		end
 	end
 
 	local max_area = 0
 	for i = 1, #all_points - 1 do
 		for j = i + 1, #all_points do
-			-- Check if the entire rectange is in the map
-			if map[all_points[i].x][1] > all_points[j].y or map[all_points[i].x][2] < all_points[j].y then
-				goto continue
+			local rect_starting_x = math.min(all_points[i].x, all_points[j].x)
+			local rect_ending_x = math.max(all_points[i].x, all_points[j].x)
+			local rect_starting_y = math.min(all_points[i].y, all_points[j].y)
+			local rect_ending_y = math.max(all_points[i].y, all_points[j].y)
+
+			-- TODO: Verify that there no points within the rectangle
+			for x = rect_starting_x + 1, rect_ending_x - 1 do
+				for _, range in ipairs(map[x]) do
+					if rect_starting_y < range[1] and range[1] < rect_ending_y then
+						goto continue
+					end
+					if rect_starting_y < range[2] and range[2] < rect_ending_y then
+						goto continue
+					end
+				end
 			end
-			if map[all_points[j].x][1] > all_points[i].y or map[all_points[j].x][2] < all_points[i].y then
+			-- TODO: Verify that all four corners are in
+			for _, range in ipairs(map[rect_starting_x]) do
+			end
+			if
+				not (
+					check_in_ranges(map[rect_starting_x], rect_starting_y)
+					and check_in_ranges(map[rect_starting_x], rect_ending_y)
+					and check_in_ranges(map[rect_ending_x], rect_starting_y)
+					and check_in_ranges(map[rect_ending_x], rect_ending_y)
+				)
+			then
 				goto continue
 			end
 
